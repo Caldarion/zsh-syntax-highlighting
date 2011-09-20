@@ -38,7 +38,7 @@
 : ${ZSH_HIGHLIGHT_STYLES[function]:=fg=green}
 : ${ZSH_HIGHLIGHT_STYLES[command]:=fg=green}
 : ${ZSH_HIGHLIGHT_STYLES[precommand]:=fg=green,underline}
-: ${ZSH_HIGHLIGHT_STYLES[commandseparator]:=fg=green,bold}
+: ${ZSH_HIGHLIGHT_STYLES[commandseparator]:=none}
 : ${ZSH_HIGHLIGHT_STYLES[hashed-command]:=fg=green}
 : ${ZSH_HIGHLIGHT_STYLES[path]:=underline}
 : ${ZSH_HIGHLIGHT_STYLES[globbing]:=fg=blue}
@@ -153,10 +153,11 @@ _zsh_highlight_main_highlighter_check_assign()
 # Check if the argument is a path.
 _zsh_highlight_main_highlighter_check_path()
 {
-  [[ -z "${(Q)~arg}" ]] && return 1
-  [[ -e "${(Q)~arg}" ]] && return 0
-  [[ ! -e "${(Q)~arg:h}" ]] && return 1
-  [[ ${BUFFER[1]} != "-" && ${#BUFFER} == $end_pos && -n $(print "${(Q)~arg}"*(N)) ]] && return 0
+  local expanded_path; : ${expanded_path:=${(Q)~arg}}
+  [[ -z "$expanded_path" ]] && return 1
+  [[ -e "$expanded_path" ]] && return 0
+  [[ ! -e "${expanded_path:h}" ]] && return 1
+  [[ ${BUFFER[1]} != "-" && ${#BUFFER} == $end_pos && -n $(print "${expanded_path}"*(N)) ]] && return 0
   return 1
 }
 
